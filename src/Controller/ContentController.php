@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 Use Symfony\Component\Routing\Annotation\Route;
 
 class ContentController extends AbstractController
@@ -28,8 +29,28 @@ class ContentController extends AbstractController
     {
         $content = $contentRepository->find($id);
         if ($content) {
-            $jsonContent = $serializer->serialize($content, 'json');
-            return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
+            // Normaliser le contenu pour éviter les références circulaires
+            $data = $serializer->normalize($content, null, [
+                AbstractObjectNormalizer::ATTRIBUTES => [
+                    'id',
+                    'titre',
+                    'categorie',
+                    'video',
+                    'Langue',
+                    'episodes' => [
+                        'id',
+                        'numero_episode',
+                        'titre_episode',
+                        'duree',
+                        'saison' => [
+                            'id',
+                            'numero_saison'
+                        ]
+                    ]
+                ],
+            ]);
+
+            return new JsonResponse($data, Response::HTTP_OK);
         }
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
