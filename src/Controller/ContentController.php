@@ -28,11 +28,11 @@ class ContentController extends AbstractController
                     'titre',
                     'categorie',
                     'video',
-                    'Langue',
+                    'langue',
                     'episodes' => [
                         'id',
-                        'numero_episode',
-                        'titre_episode',
+                        'numeroEpisode',
+                        'titreEpisode',
                         'duree',
                         'saison' => [
                             'id',
@@ -59,11 +59,11 @@ class ContentController extends AbstractController
                     'titre',
                     'categorie',
                     'video',
-                    'Langue',
+                    'langue',
                     'episodes' => [
                         'id',
-                        'numero_episode',
-                        'titre_episode',
+                        'numeroEpisode',
+                        'titreEpisode',
                         'duree',
                         'saison' => [
                             'id',

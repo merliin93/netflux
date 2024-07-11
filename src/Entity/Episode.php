@@ -30,6 +30,7 @@ class Episode
     #[ORM\JoinColumn(nullable: false)]
     private ?Saison $saison = null;
 
+
     public function getId(): ?int
     {
         return $this->id;

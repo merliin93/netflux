@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 
 class SaisonController extends AbstractController
 {
@@ -20,19 +21,46 @@ class SaisonController extends AbstractController
     public function getSaisonList(SaisonRepository $saisonRepository, SerializerInterface $serializer): JsonResponse
     {
         $saisonList = $saisonRepository->findAll();
-        $jsonSaisonList = $serializer->serialize($saisonList, 'json');
-        return new JsonResponse($jsonSaisonList, Response::HTTP_OK, [], true);
+
+        // Normaliser les saisons pour éviter les références circulaires
+        $data = $serializer->normalize($saisonList, null, [
+            AbstractObjectNormalizer::ATTRIBUTES => [
+                'id',
+                'numeroSaison',
+                'content_id_id' => [
+                    'id',
+                    'titre'
+                ],
+            ],
+        ]);
+
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     #[Route('/api/saison/{id}', name: 'detailSaison', methods: ['GET'])]
     public function getDetailSaison(int $id, SerializerInterface $serializer, SaisonRepository $saisonRepository): JsonResponse
     {
-        $saison = $saisonRepository->find($id);
-        if ($saison) {
-            $jsonSaison = $serializer->serialize($saison, 'json');
-            return new JsonResponse($jsonSaison, Response::HTTP_OK, [], true);
-        }
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        $saisonList = $saisonRepository->find($id);
+
+        // Normaliser les saisons pour éviter les références circulaires
+        $data = $serializer->normalize($saisonList, null, [
+            AbstractObjectNormalizer::ATTRIBUTES => [
+                'id',
+                'numero_saison',
+                'content_id' => [
+                    'id',
+                    'titre'
+                ],
+                'episode_id' => [
+                    'id',
+                    'numero_episode',
+                    'titre_episode',
+                    'duree'
+                ]
+            ],
+        ]);
+
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     #[Route('/api/createSaison', name:"createSaison", methods: ['POST'])]

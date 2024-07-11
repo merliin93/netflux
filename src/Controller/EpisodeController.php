@@ -29,13 +29,9 @@ class EpisodeController extends AbstractController
         $data = $serializer->normalize($episodeList, null, [
             AbstractObjectNormalizer::ATTRIBUTES => [
                 'id',
-                'numero_episode',
-                'titre_episode',
+                'numeroEpisode',
+                'titreEpisode',
                 'duree',
-                'content_id' => [
-                    'id',
-                    'titre'
-                ],
                 'saison' => [
                     'id',
                     'numero_saison'
@@ -49,12 +45,24 @@ class EpisodeController extends AbstractController
     #[Route('/api/episode/{id}', name: 'detailEpisode', methods: ['GET'])]
     public function getDetailEpisode(int $id, SerializerInterface $serializer, EpisodeRepository $episodeRepository): JsonResponse
     {
-        $episode = $episodeRepository->find($id);
-        if ($episode) {
-            $jsonEpisode = $serializer->serialize($episode, 'json');
-            return new JsonResponse($jsonEpisode, Response::HTTP_OK, [], true);
-        }
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        $episodeList = $episodeRepository->find($id);
+
+        
+        // Serializer with specified attributes to avoid circular reference
+        $data = $serializer->normalize($episodeList, null, [
+            AbstractObjectNormalizer::ATTRIBUTES => [
+                'id',
+                'numeroEpisode',
+                'titreEpisode',
+                'duree',
+                'saison' => [
+                    'id',
+                    'numero_saison'
+                ],
+            ],
+        ]);
+
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     #[Route('/api/createEpisode', name: "createEpisode", methods: ['POST'])]

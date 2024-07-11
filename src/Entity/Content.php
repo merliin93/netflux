@@ -25,7 +25,7 @@ class Content
     private ?string $video = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Langue = null;
+    private ?string $langue = null;
 
     /**
      * @var Collection<int, Episode>
@@ -79,14 +79,14 @@ class Content
         return $this;
     }
 
-    public function getLangue(): ?string
+    public function getlangue(): ?string
     {
-        return $this->Langue;
+        return $this->langue;
     }
 
-    public function setLangue(string $Langue): static
+    public function setlangue(string $langue): static
     {
-        $this->Langue = $Langue;
+        $this->langue = $langue;
 
         return $this;
     }
