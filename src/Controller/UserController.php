@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\User; // Assurez-vous que cette ligne correspond au chemin de votre entité User
-use App\Repository\UserRepository;
+use App\Entity\Profil; // Assurez-vous que cette ligne correspond au chemin de votre entité Profil
+use App\Repository\ProfilRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class UserController extends AbstractController
 {
     #[Route('/api/users', name: 'user', methods: ['GET'])]
-    public function getUserList(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function getUserList(ProfilRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
         $userList = $userRepository->findAll();
         $jsonUserList = $serializer->serialize($userList, 'json');
@@ -24,7 +24,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/api/user/{id}', name: 'detailUser', methods: ['GET'])]
-    public function getDetailUser(int $id, SerializerInterface $serializer, UserRepository $userRepository): JsonResponse
+    public function getDetailUser(int $id, SerializerInterface $serializer, ProfilRepository $userRepository): JsonResponse
     {
         $user = $userRepository->find($id);
         if ($user) {
@@ -37,7 +37,7 @@ class UserController extends AbstractController
     #[Route('/api/createUsers', name: "createUser", methods: ['POST'])]
     public function createUsers(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, UrlGeneratorInterface $urlGenerator): JsonResponse
     {
-        $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+        $user = $serializer->deserialize($request->getContent(), Profil::class, 'json');
         $em->persist($user);
         $em->flush();
 
